@@ -1,0 +1,6 @@
+---
+# handlers file for ansible-activated-openssl
+- name: Update certificate index
+  shell: /usr/sbin/update-ca-certificates
+  tags:
+    - skip_ansible_lint

@@ -1,0 +1,78 @@
+---
+# tasks file for ansible-activated-openssl
+- name: Create CA Directory
+  file:
+    path: /usr/local/share/ca-certificates
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+- name: Copy CA
+  copy:
+    src: "{{ cert_ca_cert_src }}"
+    dest: "/usr/local/share/ca-certificates/{{ cert_ca_cert_name }}.crt"
+  notify: Update certificate index
+- name: Create Private Directory
+  file:
+    path: "{{ cert_dest_directory }}/private"
+    state: directory
+    owner: "{{ cert_owner }}"
+    group: "{{ cert_group }}"
+    mode: 0700
+- name: Create Certs Directory
+  file:
+    path: "{{ cert_dest_directory }}/certs"
+    state: directory
+    owner: "{{ cert_owner }}"
+    group: "{{ cert_group }}"
+    mode: 0755
+- name: Determine if key exists
+  stat:
+    path: "{{ cert_dest_directory }}/private/{{ cert_name }}.key"
+  register: key_file
+- name: Determine if crt exists
+  stat:
+    path: "{{ cert_dest_directory }}/private/{{ cert_name }}.crt"
+  register: crt_file
+- name: Generate key
+  shell: openssl genrsa -out /tmp/temp.key 2048
+  delegate_to: localhost
+  tags:
+    - skip_ansible_lint
+- name: Generate csr
+  shell: "openssl req -new -key /tmp/temp.key -out /tmp/temp.csr -config {{ cert_ca_conf_src }}"
+  delegate_to: localhost
+  when: not key_file.stat.exists
+  tags:
+    - skip_ansible_lint
+- name: Generate signed cert
+  shell: "openssl x509 -req -in /tmp/temp.csr -CA {{ cert_ca_cert_src }} -CAkey {{ cert_ca_key_src }} -CAcreateserial -out /tmp/temp.crt -days 3650 -sha256 -extfile {{ cert_ca_conf_src }} -extensions '{{ cert_extension_name }}'"
+  delegate_to: localhost
+  when: not key_file.stat.exists
+  tags:
+    - skip_ansible_lint
+- name: Copy key
+  copy:
+    src: /tmp/temp.key
+    dest: "{{ cert_dest_directory }}/private/{{ cert_name }}.key"
+    owner: "{{ cert_owner }}"
+    group: "{{ cert_group }}"
+    mode: 0400
+  when: not key_file.stat.exists
+- name: Copy cert
+  copy:
+    src: /tmp/temp.crt
+    dest: "{{ cert_dest_directory }}/certs/{{ cert_name }}.crt"
+    owner: "{{ cert_owner }}"
+    group: "{{ cert_group }}"
+    mode: 0400
+  when: not key_file.stat.exists
+- name: Cleanup
+  shell: "rm /tmp/{{item}} || true"
+  delegate_to: localhost
+  with_items:
+    - temp.key
+    - temp.csr
+    - temp.crt
+  tags:
+    - skip_ansible_lint

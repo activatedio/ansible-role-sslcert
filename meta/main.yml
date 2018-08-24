@@ -1,0 +1,12 @@
+---
+galaxy_info:
+  role_name: sslcert
+  author: btomasini
+  description: Create ssl certificates, including self-signed
+  company: Activated, Inc.
+  license: MIT
+  min_ansible_version: 2.4
+  galaxy_tags: 
+    - ssl
+    - openssl
+dependencies: []

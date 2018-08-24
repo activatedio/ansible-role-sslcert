@@ -1,0 +1,16 @@
+[ req ]
+prompt             = no
+distinguished_name = cert
+
+[ cert ]
+# The bare minimum is probably a commonName
+commonName = *.exmaple.org
+countryName = US
+localityName = California
+organizationName = My Company
+organizationalUnitName = Systems
+stateOrProvinceName = CA
+emailAddress = hostmaster@example.org
+
+[ cert_ext ]
+extendedKeyUsage = serverAuth,clientAuth

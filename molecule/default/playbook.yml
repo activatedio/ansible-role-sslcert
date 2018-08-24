@@ -1,0 +1,25 @@
+---
+- name: Converge
+  hosts: all
+  pre_tasks:
+  - name: Create test user
+    user:
+      name: testuser
+      state: present
+  - name: Create test directory
+    file:
+      path: /var/cache/ssl-test
+      state: directory
+  roles:
+    - role: ansible-role-sslcert
+  vars:
+    cert_ca_cert_src: ./certs/ca.crt
+    cert_ca_key_src: ./certs/ca.key
+    # TODO - Should change this name
+    cert_ca_conf_src: ./certs/cert.conf
+    cert_ca_cert_name: consul
+    cert_extension_name: cert_ext
+    cert_dest_directory: /var/cache/ssl-test
+    cert_name: servertest
+    cert_owner: testuser
+    cert_group: testuser
