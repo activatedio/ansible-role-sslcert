@@ -18,7 +18,6 @@
     # TODO - Should change this name
     cert_ca_conf_src: ./certs/cert.conf
     cert_ca_cert_name: consul
-    cert_extension_name: cert_ext
     cert_dest_directory: /var/cache/ssl-test
     cert_name: servertest
     cert_owner: testuser

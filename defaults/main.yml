@@ -1,4 +1,4 @@
 ---
-# defaults file for ansible-activated-openssl
 cert_owner: root
 cert_group: root
+cert_extension_name: cert_ext
