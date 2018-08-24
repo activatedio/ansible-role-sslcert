@@ -1,10 +1,10 @@
-Role Name
+sslcert
 =========
 
 Creates self-signed ssl certificates.
 
 Requires that a CA and a certificate config are created. Example config and CA
-creation script are found in the `bin` directory of this project.
+creation script are found in the `scripts` directory.
 
 Requirements
 ------------
